@@ -14,7 +14,7 @@ const Home = () => {
 
   const fetchRecentItems = async () => {
     try {
-      const response = await axios.get('http://localhost:8080/api/recent');
+      const response = await axios.get('http://localhost:8081/api/recent');
       setRecentItems(response.data);
     } catch (error) {
       console.error('Error fetching recent items:', error);

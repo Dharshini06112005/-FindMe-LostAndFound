@@ -1,6 +1,9 @@
 import { clsx } from 'clsx';
+import { useState } from 'react';
 
 const ItemCard = ({ item }) => {
+  const [showContact, setShowContact] = useState(false);
+
   const formatDate = (dateString) => {
     return new Date(dateString).toLocaleDateString('en-US', {
       year: 'numeric',
@@ -9,13 +12,16 @@ const ItemCard = ({ item }) => {
     });
   };
 
+  const imageSrc = item.imageBase64 ? `data:image/jpeg;base64,${item.imageBase64}` : item.image;
+  const contactInfo = item.contactEmail || item.contact;
+
   return (
     <div className="card group hover:shadow-xl transition-all duration-300">
       {/* Image */}
       <div className="aspect-w-16 aspect-h-9 mb-4 rounded-md overflow-hidden bg-gray-100">
-        {item.image ? (
+        {imageSrc ? (
           <img
-            src={item.image}
+            src={imageSrc}
             alt={item.itemType}
             className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
           />
@@ -68,25 +74,25 @@ const ItemCard = ({ item }) => {
             <span>{formatDate(item.date)}</span>
           </div>
 
-          {/* Contact */}
-          {item.contact && (
-            <div className="flex items-center">
-              <svg className="w-4 h-4 mr-2 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+          {/* Contact - shown conditionally when button is clicked */}
+          {showContact && contactInfo && (
+            <div className="flex items-center mt-2 p-2 bg-blue-50 text-blue-700 rounded border border-blue-100">
+              <svg className="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
                 <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
                 <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
               </svg>
-              <span className="truncate">{item.contact}</span>
+              <span className="font-medium break-all">{contactInfo}</span>
             </div>
           )}
         </div>
 
         {/* Actions */}
         <div className="flex space-x-2 pt-3 border-t border-gray-100">
-          <button className="btn-primary text-xs py-2 px-3 flex-1">
-            Contact Owner
-          </button>
-          <button className="btn-secondary text-xs py-2 px-3">
-            Details
+          <button 
+            className="btn-primary text-xs py-2 px-3 flex-1"
+            onClick={() => setShowContact(!showContact)}
+          >
+            {showContact ? 'Hide Contact' : `Contact ${item.status === 'Lost' ? 'Owner' : 'Finder'}`}
           </button>
         </div>
       </div>

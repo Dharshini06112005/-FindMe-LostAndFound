@@ -61,6 +61,20 @@ const Report = () => {
       submitData.append('location', formData.location.trim());
       submitData.append('date', formData.date);
       submitData.append('status', formData.status);
+      
+      const loggedInEmail = localStorage.getItem('userEmail');
+      if (loggedInEmail) {
+        submitData.append('email', loggedInEmail);
+      } else {
+        const userStr = localStorage.getItem('user');
+        if (userStr) {
+          try {
+            const u = JSON.parse(userStr);
+            if (u && u.email) submitData.append('email', u.email);
+          } catch(e) {}
+        }
+      }
+
       if (formData.image) {
         submitData.append('image', formData.image);
       }
@@ -73,7 +87,7 @@ const Report = () => {
         status: formData.status
       });
 
-      const response = await axios.post('http://localhost:8080/api/report', submitData, {
+      const response = await axios.post('http://localhost:8081/api/report', submitData, {
         headers: {
           'Content-Type': 'multipart/form-data'
         },

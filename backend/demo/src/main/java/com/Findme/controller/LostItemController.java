@@ -71,10 +71,10 @@ public class LostItemController {
         return new ResponseEntity<>(items, HttpStatus.OK);
     }
     
-    // GET - Find by item name
+    // GET - Find by item type
     @GetMapping("/search/name")
-    public ResponseEntity<List<LostItem>> findByItemName(@RequestParam String itemName) {
-        List<LostItem> items = lostItemService.findByItemName(itemName);
+    public ResponseEntity<List<LostItem>> findByItemType(@RequestParam String itemType) {
+        List<LostItem> items = lostItemService.findByItemType(itemType);
         return new ResponseEntity<>(items, HttpStatus.OK);
     }
     

@@ -19,17 +19,20 @@ export const AuthProvider = ({ children }) => {
     // Check if user is logged in on app start
     const token = localStorage.getItem('token');
     if (token) {
-      // Set default authorization header
       axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-      // You could also verify the token with the backend here
-      setUser({ token }); // For now, just set basic user info
+      const userStr = localStorage.getItem('user');
+      if (userStr) {
+        setUser(JSON.parse(userStr));
+      } else {
+        setUser({ token });
+      }
     }
     setLoading(false);
   }, []);
 
   const login = async (email, password) => {
     try {
-      const response = await axios.post('http://localhost:8080/api/auth/login', {
+      const response = await axios.post('http://localhost:8081/api/auth/login', {
         email,
         password
       });
@@ -38,6 +41,8 @@ export const AuthProvider = ({ children }) => {
       
       // Save token to localStorage
       localStorage.setItem('token', token);
+      localStorage.setItem('user', JSON.stringify(userData));
+      localStorage.setItem('userEmail', userData.email);
       
       // Set default authorization header
       axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
@@ -56,7 +61,7 @@ export const AuthProvider = ({ children }) => {
 
   const signup = async (userData) => {
     try {
-      const response = await axios.post('http://localhost:8080/api/auth/signup', userData);
+      const response = await axios.post('http://localhost:8081/api/auth/signup', userData);
       return { success: true, message: 'Account created successfully!' };
     } catch (error) {
       return { 
@@ -69,6 +74,8 @@ export const AuthProvider = ({ children }) => {
   const logout = () => {
     // Remove token from localStorage
     localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    localStorage.removeItem('userEmail');
     
     // Remove authorization header
     delete axios.defaults.headers.common['Authorization'];

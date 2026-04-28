@@ -4,7 +4,10 @@ import axios from 'axios';
 import ItemCard from '../components/ItemCard';
 import Toast from '../components/Toast';
 
+import { useAuth } from '../context/AuthContext';
+
 const Profile = () => {
+  const { user } = useAuth();
   const [userReports, setUserReports] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showToast, setShowToast] = useState(false);
@@ -17,7 +20,8 @@ const Profile = () => {
 
   const fetchUserReports = async () => {
     try {
-      const response = await axios.get('http://localhost:8080/api/user/reports');
+      const email = user?.email || localStorage.getItem('userEmail') || '';
+      const response = await axios.get(`http://localhost:8081/api/user/reports?email=${email}`);
       setUserReports(response.data);
     } catch (error) {
       console.error('Error fetching user reports:', error);
@@ -51,7 +55,7 @@ const Profile = () => {
 
   const handleDeleteReport = async (reportId) => {
     try {
-      await axios.delete(`http://localhost:8080/api/user/reports/${reportId}`);
+      await axios.delete(`http://localhost:8081/api/user/reports/${reportId}`);
       setUserReports(userReports.filter(report => report.id !== reportId));
       setToastMessage('Report deleted successfully!');
       setToastType('success');
@@ -59,6 +63,23 @@ const Profile = () => {
     } catch (error) {
       console.error('Error deleting report:', error);
       setToastMessage('Failed to delete report. Please try again.');
+      setToastType('error');
+      setShowToast(true);
+    }
+  };
+
+  const handleResolveReport = async (reportId) => {
+    try {
+      await axios.put(`http://localhost:8081/api/user/reports/${reportId}/resolve`);
+      setUserReports(userReports.map(report => 
+        report.id === reportId ? { ...report, resolved: true } : report
+      ));
+      setToastMessage('Item marked as resolved!');
+      setToastType('success');
+      setShowToast(true);
+    } catch (error) {
+      console.error('Error resolving report:', error);
+      setToastMessage('Failed to mark as resolved.');
       setToastType('error');
       setShowToast(true);
     }
@@ -82,9 +103,9 @@ const Profile = () => {
               </svg>
             </div>
             <div>
-              <h2 className="text-xl font-semibold text-gray-800">John Doe</h2>
-              <p className="text-gray-600">john@email.com</p>
-              <p className="text-sm text-gray-500">Member since August 2025</p>
+              <h2 className="text-xl font-semibold text-gray-800">{user?.name || 'User'}</h2>
+              <p className="text-gray-600">{user?.email || 'email@example.com'}</p>
+              {user?.phone && <p className="text-gray-600">Phone: {user.phone}</p>}
             </div>
           </div>
         </div>
@@ -139,6 +160,15 @@ const Profile = () => {
                   
                   {/* Action Buttons */}
                   <div className="absolute top-4 right-4 flex space-x-2">
+                    {!report.resolved && (
+                      <button
+                        onClick={() => handleResolveReport(report.id)}
+                        className="bg-green-100 text-green-700 hover:bg-green-200 text-xs py-1 px-2 rounded font-medium transition-colors"
+                        title="Mark as Resolved"
+                      >
+                        Resolved
+                      </button>
+                    )}
                     <button
                       onClick={() => handleDeleteReport(report.id)}
                       className="btn-danger text-xs py-1 px-2"

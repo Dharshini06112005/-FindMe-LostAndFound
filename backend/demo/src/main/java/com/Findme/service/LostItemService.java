@@ -34,10 +34,15 @@ public class LostItemService {
         Optional<LostItem> optionalLostItem = lostItemRepository.findById(id);
         if (optionalLostItem.isPresent()) {
             LostItem existingItem = optionalLostItem.get();
-            existingItem.setItemName(lostItemDetails.getItemName());
+            existingItem.setItemType(lostItemDetails.getItemType());
             existingItem.setLocation(lostItemDetails.getLocation());
             existingItem.setDescription(lostItemDetails.getDescription());
-            existingItem.setContact(lostItemDetails.getContact());
+            existingItem.setDate(lostItemDetails.getDate());
+            existingItem.setStatus(lostItemDetails.getStatus());
+            existingItem.setContactEmail(lostItemDetails.getContactEmail());
+            if (lostItemDetails.getImageBase64() != null) {
+                existingItem.setImageBase64(lostItemDetails.getImageBase64());
+            }
             return lostItemRepository.save(existingItem);
         }
         return null;
@@ -57,13 +62,18 @@ public class LostItemService {
         return lostItemRepository.searchItems(searchTerm);
     }
     
-    // Find by item name
-    public List<LostItem> findByItemName(String itemName) {
-        return lostItemRepository.findByItemNameContainingIgnoreCase(itemName);
+    // Find by item type
+    public List<LostItem> findByItemType(String itemType) {
+        return lostItemRepository.findByItemTypeContainingIgnoreCase(itemType);
     }
     
     // Find by location
     public List<LostItem> findByLocation(String location) {
         return lostItemRepository.findByLocationContainingIgnoreCase(location);
+    }
+
+    // Find by status
+    public List<LostItem> findByStatus(String status) {
+        return lostItemRepository.findByStatus(status);
     }
 } 

@@ -7,6 +7,7 @@ const Signup = () => {
   const [formData, setFormData] = useState({
     fullName: '',
     email: '',
+    phone: '',
     password: '',
     confirmPassword: ''
   });
@@ -73,6 +74,7 @@ const Signup = () => {
       const result = await signup({
         fullName: formData.fullName,
         email: formData.email,
+        phone: formData.phone,
         password: formData.password
       });
       
@@ -152,6 +154,23 @@ const Signup = () => {
               {errors.email && (
                 <p className="text-red-500 text-sm mt-1">{errors.email}</p>
               )}
+            </div>
+
+            {/* Phone */}
+            <div>
+              <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-2">
+                Phone Number
+              </label>
+              <input
+                type="tel"
+                id="phone"
+                name="phone"
+                value={formData.phone}
+                onChange={handleChange}
+                className="input-field"
+                placeholder="Enter your phone number"
+                required
+              />
             </div>
 
             {/* Password */}

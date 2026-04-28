@@ -6,7 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 
 @Entity
-@Table(name = "lost_items")
+@Table(name = "items")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -17,7 +17,7 @@ public class LostItem {
     private Long id;
     
     @Column(nullable = false)
-    private String itemName;
+    private String itemType;
     
     @Column(nullable = false)
     private String location;
@@ -25,8 +25,18 @@ public class LostItem {
     @Column(columnDefinition = "TEXT")
     private String description;
     
+    private String date;
+    
     @Column(nullable = false)
-    private String contact;
+    private String status; // "Lost" or "Found"
+    
+    private String contactEmail;
+    
+    @Column(columnDefinition = "TEXT")
+    private String imageBase64;
+    
+    @Column(nullable = false)
+    private boolean resolved = false;
     
     @Column(name = "created_at")
     private java.time.LocalDateTime createdAt;
